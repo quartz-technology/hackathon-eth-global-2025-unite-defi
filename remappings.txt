@@ -1,3 +1,8 @@
+src/=src/
+test/=test/
+
 @forge-std/=lib/forge-std/src/
 @1inch/limit-order-protocol/=lib/limit-order-protocol/contracts/
 @1inch/solidity-utils/=lib/solidity-utils/
+@chainlink/=lib/chainlink-evm/contracts/src/
+@openzeppelin/=lib/openzeppelin-contracts/
