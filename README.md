@@ -45,14 +45,25 @@ There are two demos you can run to test Rosetta:
 - A one-time demo which has all the required values pre-filled
 - An interactive demo, where you can set the parameters of the order for Alice and Bob
 
+
+### Dependencies
+
+You must install:
+
+- forge
+- anvil
+- bun
+
+And run:
+```shell
+git submodule update --init --recursive
+forge build
+cd tools/local-deployer && bun i
+```
+
 For both demos, you will need to run an anvil fork of Ethereum mainnet:
 ```shell
 anvil -f YOUR_ETH_RPC
-```
-
-Then, to prepare the demo, install the required dependencies:
-```shell
-cd tools/local-deployer && bun i
 ```
 
 ### One-time demo
