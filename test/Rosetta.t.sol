@@ -30,4 +30,8 @@ contract RosettaTest is Test {
 
         limitOrderProtocol = new LimitOrderProtocol(IWETH(address(0)));
     }
+
+    function test_void() public pure {
+        assertTrue(true);
+    }
 }
