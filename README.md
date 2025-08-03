@@ -1,6 +1,12 @@
-# Rosetta
+# <h1 align="center"> Rosetta </h1>
 
-Rosetta expands the 1inch Limit Order Protocol (LOP) by providing support for multi-asset orders.
+<p align="center">
+    <img src="LOGO.png" style="border-radius:5%" width="800" alt="">
+</p>
+
+<p align="center">
+  Rosetta expands the 1inch Limit Order Protocol (LOP) by providing support for multi-asset orders.
+</p>
 
 ## Description
 
