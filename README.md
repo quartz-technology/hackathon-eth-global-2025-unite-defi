@@ -1,7 +1,7 @@
 # <h1 align="center"> Rosetta </h1>
 
 <p align="center">
-    <img src="LOGO.png" style="border-radius:5%" width="800" alt="">
+    <img src="LOGO.png" style="border-radius:5%" width="400" alt="">
 </p>
 
 <p align="center">
