@@ -26,15 +26,8 @@ contract RosettaTest is Test {
     LimitOrderProtocol internal limitOrderProtocol;
 
     function setUp() public {
-        token0 = address(new ERC20Mock("ETH Wrapped", "WETH"));
-        token1 = address(new ERC20Mock("USD Circle", "USDC"));
-        token2 = address(new ERC20Mock("USD Tether", "USDT"));
-        token3 = address(new ERC20Mock("EUR Circle", "EURC"));
-
         quoter = IQuoter(new QuoterMock());
 
         limitOrderProtocol = new LimitOrderProtocol(IWETH(address(0)));
     }
-
-    function test_() public {}
 }

@@ -26,15 +26,6 @@ contract Rosetta is IPostInteraction {
     using SafeERC20 for IERC20;
 
     /* -------------------------------------------------------------------------- */
-    /*                                  STRUCTS                                   */
-    /* -------------------------------------------------------------------------- */
-
-    struct AlternativeAssetData {
-        address asset;
-        uint256 maxAmount;
-    }
-
-    /* -------------------------------------------------------------------------- */
     /*                                   ERRORS                                   */
     /* -------------------------------------------------------------------------- */
 
@@ -89,41 +80,47 @@ contract Rosetta is IPostInteraction {
         IOrderMixin.Order calldata order,
         bytes calldata, /* extension */
         bytes32 orderHash,
-        address, /* taker */
-        uint256, /* makingAmount */
-        uint256, /* takingAmount */
+        address taker,
+        uint256 makingAmount,
+        uint256, /*takingAmount*/
         uint256 remainingMakingAmount,
         bytes calldata extraData
     ) external override(IPostInteraction) onlyLimitOrderProtocol onlyUncompletedOrder(orderHash) {
-        if (remainingMakingAmount == 0) return;
+        uint256 _currentlyRemainingMakingAmount = remainingMakingAmount - makingAmount;
 
-        AlternativeAssetData[] memory _alternativeAssetsData = abi.decode(extraData, (AlternativeAssetData[]));
-        uint256 _remainingMakingAmount = remainingMakingAmount;
+        if (_currentlyRemainingMakingAmount == 0) return;
+
+        address[] memory _alternativeAssets = abi.decode(extraData, (address[]));
         address _makerAsset = order.makerAsset.get();
         address _maker = order.maker.get();
 
-        for (uint256 i = 0; i < _alternativeAssetsData.length; i++) {
-            AlternativeAssetData memory _alternativeAssetData = _alternativeAssetsData[i];
-            IERC20Metadata _alternativeAsset = IERC20Metadata(_alternativeAssetData.asset);
-            uint256 _maxAlternativeAssetAmount = _alternativeAssetData.maxAmount;
-            uint256 _alternativeAssetBalance = _alternativeAsset.balanceOf(address(this));
+        for (uint256 i = 0; i < _alternativeAssets.length; i++) {
+            address _alternativeAsset = _alternativeAssets[i];
+            uint256 _alternativeAssetTakerBalance = IERC20(_alternativeAsset).balanceOf(taker);
 
-            if (_alternativeAssetBalance == 0 || _maxAlternativeAssetAmount == 0) continue;
+            if (_alternativeAssetTakerBalance == 0) continue;
 
-            uint256 _maxAmountTransferable = Math.min(_maxAlternativeAssetAmount, _alternativeAssetBalance);
-            uint256 _quote = quoter.getQuote(address(_alternativeAsset), _makerAsset, _maxAmountTransferable);
+            uint256 _quote = quoter.getQuote(_alternativeAsset, _makerAsset, _alternativeAssetTakerBalance);
 
             if (_quote == 0) continue;
 
-            uint256 _alternativeAssetAmountToTransfer = Math.min(_quote, _remainingMakingAmount);
+            uint256 _alternativeAssetAmountToTransfer = _alternativeAssetTakerBalance;
 
-            IERC20(_alternativeAsset).safeTransfer(_maker, _alternativeAssetAmountToTransfer);
-            _remainingMakingAmount -= _alternativeAssetAmountToTransfer;
+            if (_quote > _currentlyRemainingMakingAmount) {
+                _quote = _currentlyRemainingMakingAmount;
+                _alternativeAssetAmountToTransfer = quoter.getQuote(_makerAsset, _alternativeAsset, _quote);
+            }
 
-            if (_remainingMakingAmount == 0) break;
+            _currentlyRemainingMakingAmount -= _quote;
+
+            // Transfer alternative asset to maker and maker asset to taker.
+            IERC20(_alternativeAsset).safeTransferFrom(taker, _maker, _alternativeAssetAmountToTransfer);
+            IERC20(_makerAsset).safeTransferFrom(_maker, taker, _quote);
+
+            if (_currentlyRemainingMakingAmount == 0) break;
         }
 
-        if (_remainingMakingAmount > 0) revert InsufficientAlternativeAssets();
+        if (_currentlyRemainingMakingAmount > 0) revert InsufficientAlternativeAssets();
 
         ordersStatus[orderHash] = true;
     }

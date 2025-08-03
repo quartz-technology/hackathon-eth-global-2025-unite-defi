@@ -1,0 +1,17 @@
+{
+  "name": "local-deployer",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@1inch/limit-order-sdk": "^4.9.5-rc.0",
+    "ethers": "^6.15.0",
+    "viem": "^2.33.2"
+  }
+}
