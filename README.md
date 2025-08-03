@@ -31,3 +31,43 @@ This also means that the initial order has to be created using the `partialFill`
 The quotes between the alternative asset and the maker's asset is made using an external quoter service. Any kind of onchain oracle such as Chainlink could do the job.
 
 Both the maker and taker must provide approvals to authorize Rosetta to respectively send the maker asset to the taker and send the alternative assets to the maker.
+
+## Run the demo
+
+There are two demos you can run to test Rosetta:
+
+- A one-time demo which has all the required values pre-filled
+- An interactive demo, where you can set the parameters of the order for Alice and Bob
+
+For both demos, you will need to run an anvil fork of Ethereum mainnet:
+```shell
+anvil -f YOUR_ETH_RPC
+```
+
+Then, to prepare the demo, install the required dependencies:
+```shell
+cd tools/local-deployer && bun i
+```
+
+### One-time demo
+
+To run the one-time demo, execute the following command in your terminal:
+```shell
+cd tools/local-deployer && bun run index.ts one-time-demo
+```
+
+Take a look at the output, it contains all the details of the operations!
+
+### Interactive demo
+
+To run the interactive demo, execute the following command in your terminal:
+```shell
+cd tools/local-deployer && bun run index.ts interactive-demo
+```
+
+For this demo, you will be asked to provide inputs, feel free to test Rosetta with your own scenarios!
+Note that it keeps the same base scenario of swapping WBTC against any amount of alternative assets.
+
+## Authors
+
+Made with :heart: by the folks at Quartz Technology.
